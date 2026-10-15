@@ -3,14 +3,14 @@ SECRET_KEY=django-insecure-ornek-gizli-anahtar-buraya
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 
-# ─── VERİTABANI (PostgreSQL) ──────────────────────────────
+# ─── Database (PostgreSQL) ──────────────────────────────
 DB_NAME=eticaret_db
 DB_USER=eticaret_user
 DB_PASSWORD=guclu_bir_sifre_yaziniz
 DB_HOST=db
 DB_PORT=5432
 
-# ─── PGADMIN (Veritabanı Arayüzü) ─────────────────────────
+# ─── PGADMIN (Database Admin Panel) ─────────────────────────
 PGADMIN_EMAIL=admin@admin.com
 PGADMIN_PASSWORD=admin123
 
@@ -22,4 +22,4 @@ CELERY_BROKER_URL=redis://redis:6379/0
 CELERY_RESULT_BACKEND=redis://redis:6379/0
 
 # ─── CORS (Frontend İzinleri) ─────────────────────────────
-CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173  
