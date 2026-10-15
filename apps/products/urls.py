@@ -1,11 +1,11 @@
 """
-apps/products/urls.py: Ürün ve Kategori URL Rotaları
-====================================================
-Katalog API uç noktalarını tanımlar:
-- categories/        -> Kategori Listeleme & Ekleme
-- categories/<slug>/ -> Kategori Detay, Güncelleme & Silme
-- ''                 -> Ürün Listeleme, Filtreleme & Ekleme
-- <slug>/            -> Ürün Detay, Güncelleme & Silme
+apps/products/urls.py: Product Catalog URL Routing
+==================================================
+Maps catalog-related endpoints to views:
+- categories/        -> Category list and creation
+- categories/<slug>/ -> Category detail, update, and deletion
+- ''                 -> Product listing, filtering, search, and creation
+- <slug>/            -> Product detail, update, and deletion
 """
 
 from django.urls import path

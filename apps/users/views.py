@@ -1,16 +1,16 @@
 """
-apps/users/views.py: Kullanıcı API Görünümleri (Views)
-=====================================================
-Kullanıcı kayıt, giriş ve profil isteklerini karşılayan DRF Generic View sınıflarıdır.
+apps/users/views.py: User Authentication and Profile Views
+==========================================================
+DRF generic view classes handling registration, JWT login, and profile operations.
 
-Sınıflar ve Endpointler:
+Endpoints:
 1. RegisterView (generics.CreateAPIView):
-   - POST /api/v1/auth/register/ -> Yeni hesap oluşturur (Herkese Açık).
+   - POST /api/v1/auth/register/ -> Registers a new user account (Public).
 2. CustomTokenObtainPairView (TokenObtainPairView):
-   - POST /api/v1/auth/login/ -> E-posta ve şifre ile JWT üretir.
+   - POST /api/v1/auth/login/ -> Authenticates credentials and returns JWT access/refresh tokens.
 3. ProfileView (generics.RetrieveUpdateAPIView):
-   - GET /api/v1/auth/profile/   -> Giriş yapmış kullanıcının profilini getirir (IsAuthenticated).
-   - PATCH /api/v1/auth/profile/ -> Kullanıcının ad/soyad/telefon bilgilerini günceller.
+   - GET /api/v1/auth/profile/   -> Retrieves current authenticated user profile (IsAuthenticated).
+   - PATCH /api/v1/auth/profile/ -> Updates profile fields (first_name, last_name, phone_number).
 """
 
 from rest_framework import generics, status

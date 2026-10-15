@@ -1,16 +1,16 @@
 """
-apps/orders/views.py: Sipariş API Görünümleri (Views)
-====================================================
-Sipariş listeleme, yeni sipariş verme ve iptal uç noktalarını yönetir.
+apps/orders/views.py: Order API Views
+=====================================
+Handles order creation, customer order history retrieval, and order cancellations.
 
-Sınıflar:
+Views:
 1. OrderListCreateView (ListCreateAPIView):
-   - GET  /api/v1/orders/ -> Giriş yapan kullanıcının sipariş geçmişini getirir (Admin tüm siparişleri görür).
-   - POST /api/v1/orders/ -> Sepetteki ürünlerle yeni sipariş oluşturur (Stoktan düşer).
+   - GET  /api/v1/orders/ -> Retrieves order history for the authenticated user (staff sees all orders).
+   - POST /api/v1/orders/ -> Places a new order from cart items with atomic stock deduction.
 2. OrderDetailView (RetrieveAPIView):
-   - GET  /api/v1/orders/<id>/ -> Tek bir siparişin kalemlerini ve kargo detayını döner.
+   - GET  /api/v1/orders/<id>/ -> Retrieves order detail and itemized breakdown.
 3. OrderCancelView (GenericAPIView):
-   - POST /api/v1/orders/<id>/cancel/ -> 'Beklemede' olan siparişi iptal eder ve ürün stoklarını iade eder.
+   - POST /api/v1/orders/<id>/cancel/ -> Cancels pending orders and restores product stock levels.
 """
 
 from rest_framework import generics, status

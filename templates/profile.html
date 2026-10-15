@@ -1,13 +1,13 @@
 <!--
 ================================================================================
-templates/profile.html: Kullanıcı Profil Sayfası (/profile/)
+templates/profile.html: User Account Profile (/profile/)
 ================================================================================
-Bu dosya, kullanıcının kendi profil bilgilerini inceleyip güncellemesini sağlar.
+Enables authenticated users to inspect and update their account credentials.
 
-İçerik ve Entegrasyonlar:
-1. Profil Görüntüleme: GET /api/v1/auth/profile/ ile ad, soyad, e-posta ve telefon bilgilerini getirir.
-2. Bilgileri Güncelleme: PATCH /api/v1/auth/profile/ ile değişiklikleri veritabanına kaydeder.
-3. Çıkış Yap: localStorage'daki token'ları temizler ve ana sayfaya yönlendirir.
+Key Integrations:
+1. Profile Data: Retrieves account details via GET /api/v1/auth/profile/.
+2. Profile Updates: Submits partial updates via PATCH /api/v1/auth/profile/.
+3. Logout Action: Clears JWT tokens from client storage and redirects to storefront.
 ================================================================================
 -->
 

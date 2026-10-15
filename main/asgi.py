@@ -1,7 +1,8 @@
 """
-main/asgi.py: ASGI Asenkron Web Sunucusu Giriş Noktası
-======================================================
-Daphne, Uvicorn gibi asenkron (WebSocket, async HTTP) sunucular için giriş noktasıdır.
+main/asgi.py: ASGI Server Entrypoint
+====================================
+Exposes the ASGI callable as a module-level variable named 'application'.
+Used for handling asynchronous protocols, WebSockets, and async HTTP servers.
 """
 
 import os

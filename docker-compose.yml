@@ -1,17 +1,15 @@
 # ==============================================================================
-# docker-compose.yml: Çoklu Konteyner (Multi-Container) Orkestrasyonu
+# docker-compose.yml: Multi-Container Service Orchestration
 # ==============================================================================
-# Bu dosya, E-Ticaret sisteminin ihtiyaç duyduğu tüm bağımsız servisleri tek bir ağda
-# (network) izole olarak ayağa kaldırır ve birbirleriyle güvenle haberleştirir.
+# Orchestrates all isolated services required by the e-commerce stack:
 #
-# Servisler ve Görevleri:
-# 1. db (PostgreSQL 15)           : Ana ilişkisel veritabanı (Port: 5432)
-# 2. pgadmin (pgAdmin 4)          : Web tabanlı veritabanı yönetim arayüzü (Port: 8080)
-# 3. redis (Redis Alpine)         : Hızlı önbellek ve Celery kuyruk yöneticisi (Port: 6379)
-# 4. backend (Django + DRF)       : REST API ve Frontend sunucusu (Port: 8000)
-# 5. celery_worker (Asenkron İş)  : Sipariş, e-posta gibi arka plan kuyruk işlemlerini yürütür.
-# 6. celery_beat (Zamanlayıcı)    : Periyodik görevleri (gece stok raporu vb.) planlar.
-# 7. flower (Celery Dashboard)    : Celery kuyruklarını ve worker durumunu izler (Port: 5555)
+# 1. db (PostgreSQL 15)           : Primary relational database (Port: 5432)
+# 2. pgadmin (pgAdmin 4)          : Web-based PostgreSQL administration interface (Port: 8080)
+# 3. redis (Redis Alpine)         : In-memory cache and Celery message broker (Port: 6379)
+# 4. backend (Django + DRF)       : Core REST API server and template host (Port: 8000)
+# 5. celery_worker                : Asynchronous queue worker for background processing
+# 6. celery_beat                  : Periodic task scheduler
+# 7. flower (Celery Dashboard)    : Real-time Celery worker and task monitor (Port: 5555)
 # ==============================================================================
 
 services:

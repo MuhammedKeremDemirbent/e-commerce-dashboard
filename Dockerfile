@@ -1,14 +1,14 @@
 # ==============================================================================
-# Dockerfile: Django Backend İmaj Tanımı
+# Dockerfile: Django Backend Container Build Specification
 # ==============================================================================
-# Bu dosya, backend servisinin çalışacağı Docker container imajını adım adım inşa eder.
+# Builds the Python 3.11-slim container image for running the Django application.
 #
-# Yapılan İşlemler:
-# 1. Temel Sistem: Resmi hafif Python 3.11-slim imajını kullanır.
-# 2. Sistem Bağımlılıkları: PostgreSQL (libpq-dev), GCC ve curl araçlarını yükler.
-# 3. Python Bağımlılıkları: requirements.txt dosyasındaki tüm paketleri kurar.
-# 4. Kod Kopyalama: Proje dosyalarını /app çalışma dizinine kopyalar.
-# 5. Başlatma Komutu: Django yerleşik geliştirme sunucusunu 0.0.0.0:8000 üzerinde dinler.
+# Key Steps:
+# 1. Base Image: Official lightweight Python 3.11-slim.
+# 2. OS Dependencies: Installs PostgreSQL client libraries (libpq-dev), GCC, and curl.
+# 3. Python Packages: Installs dependencies from requirements.txt without caching.
+# 4. Source Code: Mounts application code to /app.
+# 5. Entrypoint: Launches Django development server on 0.0.0.0:8000.
 # ==============================================================================
 
 FROM python:3.11-slim

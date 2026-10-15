@@ -1,11 +1,11 @@
 """
-apps/users/urls.py: Kullanıcı Modülü URL Rotaları
-=================================================
-Kullanıcı işlemleriyle ilgili API uç noktalarını tanımlar:
-- register/      -> RegisterView (Kayıt)
-- login/         -> CustomTokenObtainPairView (JWT Giriş)
-- token/refresh/ -> TokenRefreshView (Token Yenileme)
-- profile/       -> ProfileView (Profil Bilgileri)
+apps/users/urls.py: User Module URL Routing
+===========================================
+Maps user-related endpoints to views:
+- register/      -> RegisterView (User registration)
+- login/         -> CustomTokenObtainPairView (JWT authentication)
+- token/refresh/ -> TokenRefreshView (Refresh expired access token)
+- profile/       -> ProfileView (Retrieve and update profile)
 """
 
 from django.urls import path

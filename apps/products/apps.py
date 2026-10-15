@@ -1,7 +1,7 @@
 """
-apps/products/apps.py: Ürün Uygulaması Yapılandırma Tanımı
-==========================================================
-Django uygulama kaydını (AppConfig) gerçekleştirir.
+apps/products/apps.py: Products Application Configuration
+=========================================================
+Defines the AppConfig specification for the products app.
 """
 
 from django.apps import AppConfig

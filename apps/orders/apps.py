@@ -1,7 +1,7 @@
 """
-apps/orders/apps.py: Sipariş Uygulaması Yapılandırma Tanımı
-===========================================================
-Django uygulama kaydını (AppConfig) gerçekleştirir.
+apps/orders/apps.py: Orders Application Configuration
+=====================================================
+Defines the AppConfig specification for the orders app.
 """
 
 from django.apps import AppConfig

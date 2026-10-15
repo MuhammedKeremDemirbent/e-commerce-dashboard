@@ -1,18 +1,18 @@
 # ==============================================================================
-# requirements.txt: Python Paket ve Kütüphane Bağımlılıkları
+# requirements.txt: Python Dependencies
 # ==============================================================================
-# Projenin çalışabilmesi için sanal ortamda veya Docker imajında bulunması gereken kütüphaneler:
+# Package dependencies required for running the application:
 #
-# • Django (~=4.2.0)                 : Çekirdek web çatısı
-# • djangorestframework (~=3.14.0)   : REST API geliştirme araçları
-# • djangorestframework-simplejwt    : JWT (JSON Web Token) tabanlı kimlik doğrulama
-# • django-cors-headers              : Farklı domain/portlardan gelen HTTP isteklerini karşılama (CORS)
-# • django-filter                    : API sorgularında dinamik filtreleme (?category=1 vb.)
-# • psycopg2-binary                  : PostgreSQL veritabanı sürücüsü
-# • celery                           : Asenkron ve arka plan görev yürütücüsü
-# • redis                            : Celery ve Django için bellek içi broker sürücüsü
-# • flower                           : Celery izleme ve yönetim web paneli
-# • drf-spectacular                  : OpenAPI 3.0 ve Swagger UI otomatik dokümantasyon üreticisi
+# - Django (~=4.2.0)                 : Core web framework
+# - djangorestframework (~=3.14.0)   : RESTful API development toolkit
+# - djangorestframework-simplejwt    : JSON Web Token (JWT) authentication
+# - django-cors-headers              : Cross-Origin Resource Sharing (CORS) handler
+# - django-filter                    : Dynamic query filtering (?category=1, etc.)
+# - psycopg2-binary                  : PostgreSQL database adapter
+# - celery                           : Distributed task queue framework
+# - redis                            : In-memory broker adapter for Celery
+# - flower                           : Real-time Celery monitoring web dashboard
+# - drf-spectacular                  : OpenAPI 3.0 schema and Swagger UI generator
 # ==============================================================================
 
 django

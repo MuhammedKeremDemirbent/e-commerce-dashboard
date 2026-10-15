@@ -1,10 +1,10 @@
 """
-apps/orders/urls.py: Sipariş Modülü URL Rotaları
-================================================
-Sipariş API uç noktalarını tanımlar:
-- ''             -> OrderListCreateView (Siparişleri Listele / Sipariş Ver)
-- <int:pk>/      -> OrderDetailView (Sipariş Detayı)
-- <int:pk>/cancel/ -> OrderCancelView (Siparişi İptal Et ve Stoğu İade Et)
+apps/orders/urls.py: Order Module URL Routing
+=============================================
+Maps order endpoints to views:
+- ''             -> OrderListCreateView (List user orders / Create order)
+- <int:pk>/      -> OrderDetailView (Retrieve order details)
+- <int:pk>/cancel/ -> OrderCancelView (Cancel order and restore inventory)
 """
 
 from django.urls import path

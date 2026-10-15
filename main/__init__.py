@@ -1,8 +1,8 @@
 """
-main/__init__.py: Çekirdek Paket Başlatıcı
+main/__init__.py: Core Package Initializer
 =========================================
-Bu dosya, Django projesi başlatıldığında Celery uygulamasının otomatik olarak
-yüklenmesini ve @shared_task dekoratörlerinin bu uygulamayı kullanmasını sağlar.
+Ensures the Celery application instance is loaded when Django starts,
+allowing the @shared_task decorator to bind automatically.
 """
 
 # Bu dosya Celery'nin Django başlarken otomatik yüklenmesini sağlar

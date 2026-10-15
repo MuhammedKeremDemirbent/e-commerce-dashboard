@@ -1,8 +1,8 @@
 """
-apps/users/admin.py: Kullanıcı Modeli Django Admin Konfigürasyonu
-================================================================
-Custom User modelinin Django Admin panelinde (/admin/) nasıl listeleneceğini,
-arama kriterlerini, filtrelerini ve şifreleme alanlarını yönetir.
+apps/users/admin.py: User Model Admin Configuration
+===================================================
+Customizes the representation of the custom User model within the Django Admin panel (/admin/),
+including display fields, search parameters, and permission filters.
 """
 
 from django.contrib import admin

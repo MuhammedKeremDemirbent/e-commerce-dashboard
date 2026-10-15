@@ -1,23 +1,23 @@
 """
-main/urls.py: Projenin Merkezi Rota Haritası (Root URL Router)
-=============================================================
-Bu dosya, gelen tüm HTTP isteklerini ilgili uygulamalara veya sayfalara yönlendirir.
+main/urls.py: Root URL Routing Configuration
+============================================
+Routes all incoming HTTP requests to their corresponding views or sub-routers.
 
-Yönlendirmeler:
-1. Frontend Arayüz Sayfaları:
-   - ''            -> templates/products.html  (Ana Sayfa & Vitrin)
-   - 'auth/'       -> templates/auth.html      (Giriş & Kayıt Ekranı)
-   - 'orders/'     -> templates/orders.html    (Sipariş Takibi ve İptal)
-   - 'profile/'    -> templates/profile.html   (Kullanıcı Bilgileri Düzenleme)
-   - 'dashboard/'  -> templates/dashboard.html (Yönetici & Stok Paneli)
-2. Yönetim ve Dokümantasyon:
-   - 'admin/'      -> Django yerleşik yönetim paneli
-   - 'api/docs/'   -> Swagger UI interaktif API test dokümantasyonu
-   - 'api/schema/' -> OpenAPI 3.0 YAML/JSON şeması
-3. REST API Endpoint Grupları:
-   - 'api/v1/auth/'     -> apps.users.urls     (Kayıt, Giriş, Profil, Token Yenileme)
-   - 'api/v1/products/' -> apps.products.urls  (Kategoriler, Ürünler, Arama, Stok)
-   - 'api/v1/orders/'   -> apps.orders.urls    (Sepet Siparişi Verme, İptal, Geçmiş)
+Routing Map:
+1. Frontend Templates (TemplateView):
+   - ''            -> templates/products.html  (Storefront & Product Catalog)
+   - 'auth/'       -> templates/auth.html      (Login & Registration)
+   - 'orders/'     -> templates/orders.html    (Order Tracking & Cancellation)
+   - 'profile/'    -> templates/profile.html   (User Account Profile)
+   - 'dashboard/'  -> templates/dashboard.html (Store & Inventory Dashboard)
+2. Administrative & Documentation:
+   - 'admin/'      -> Django Admin Panel
+   - 'api/docs/'   -> Swagger UI interactive API documentation
+   - 'api/schema/' -> OpenAPI 3.0 YAML/JSON schema endpoint
+3. RESTful API Sub-Routers:
+   - 'api/v1/auth/'     -> apps.users.urls     (Auth, JWT Tokens, Profile)
+   - 'api/v1/products/' -> apps.products.urls  (Categories, Products, Search)
+   - 'api/v1/orders/'   -> apps.orders.urls    (Cart Checkout, Order History)
 """
 
 from django.contrib import admin

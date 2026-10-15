@@ -1,16 +1,14 @@
 """
-manage.py: Django Yönetim ve Komut Dosyası
-==========================================
-Bu dosya, Django projesinin komut satırı aracıdır.
-Projeyi ayağa kaldırma, veritabanı tablolarını oluşturma (migration) ve otomatik
-testleri çalıştırma gibi tüm yönetimsel işlemler bu dosya üzerinden yürütülür.
+manage.py: Django Command-Line Management Utility
+=================================================
+This file serves as the administrative entry point for executing Django tasks.
 
-Sık Kullanılan Komutlar:
-- python manage.py runserver 0.0.0.0:8000 : Geliştirme sunucusunu başlatır.
-- python manage.py makemigrations         : Model değişikliklerini tespit edip migration dosyası üretir.
-- python manage.py migrate                : Migration'ları veritabanına (PostgreSQL) uygular.
-- python manage.py test                   : apps/ altındaki tüm birim ve entegrasyon testlerini koşturur.
-- python manage.py createsuperuser        : Sisteme tam yetkili yönetici (admin) hesabı tanımlar.
+Common Commands:
+- python manage.py runserver 0.0.0.0:8000 : Starts the local development server.
+- python manage.py makemigrations         : Inspects model changes and generates migration files.
+- python manage.py migrate                : Applies database migrations to PostgreSQL.
+- python manage.py test                   : Executes automated unit and integration tests.
+- python manage.py createsuperuser        : Provisions a new administrative user.
 """
 
 #!/usr/bin/env python

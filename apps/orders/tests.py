@@ -1,13 +1,13 @@
 """
-apps/orders/tests.py: Sipariş ve Stok Mantığı Test Paketi (4 Test)
-==================================================================
-Bu dosya, sipariş süreçlerini, veritabanı kilitlerini, stok düşüşünü ve iadesini test eder.
+apps/orders/tests.py: Order and Inventory Test Suite (4 Tests)
+==============================================================
+Verifies concurrency safety, inventory deduction, data isolation, and stock restoration on cancellation.
 
-Çalıştırılan Testler:
-1. test_basarili_siparis_stok_duser                      : 5 stoktan 2 sipariş verilince stoğun 3'e düştüğünü ve 201 Created döndüğünü doğrular.
-2. test_yetersiz_stokta_siparis_engellenir_ve_stok_degismez : Stok 5 iken 10 istenirse 400 Bad Request verir, siparişi oluşturmaz ve stoğu korur.
-3. test_kullanici_sadece_kendi_siparislerini_gorur       : Müşterilerin yalnızca kendi verdikleri siparişleri görebildiğini sınar (Veri İzolasyonu).
-4. test_siparis_iptali_stoklari_iade_eder                : Beklemedeki sipariş iptal edilince eksilen stokların ürüne geri yüklendiğini doğrular.
+Executed Tests:
+1. test_basarili_siparis_stok_duser                      : Verifies stock deduction (5 -> 3) and 201 Created on valid checkout.
+2. test_yetersiz_stokta_siparis_engellenir_ve_stok_degismez : Confirms 400 Bad Request when requested quantity exceeds stock.
+3. test_kullanici_sadece_kendi_siparislerini_gorur       : Ensures customers only see their own orders (Data isolation).
+4. test_siparis_iptali_stoklari_iade_eder                : Verifies cancelled pending orders return stock to inventory.
 """
 
 from django.contrib.auth import get_user_model

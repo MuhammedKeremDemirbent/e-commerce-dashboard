@@ -1,5 +1,5 @@
 """
-apps/products: Ürün ve Kategori Kataloğu Paketi
-==============================================
-Kategori ve ürün modellerini, filtreleme, arama, slug yönetimi ve stok takibini barındırır.
+apps/products: Product Catalog and Inventory Module
+===================================================
+Manages product categories, items, price, inventory levels, search, and admin permissions.
 """

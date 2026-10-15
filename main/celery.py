@@ -1,13 +1,13 @@
 """
-main/celery.py: Celery ve Asenkron Görev Konfigürasyonu
+main/celery.py: Celery Configuration and Task Discovery
 ======================================================
-Bu dosya, projenin asenkron görev kuyruk (task queue) motoru olan Celery'yi yapılandırır.
+Configures the Celery distributed task queue application.
 
-İçerik ve Görevler:
-1. DJANGO_SETTINGS_MODULE değişkenini 'main.settings' olarak tanımlar.
-2. Celery uygulamasını 'main' adıyla başlatır.
-3. Django ayarlarındaki CELERY_ ön ekiyle başlayan konfigürasyonları okur.
-4. apps/ altındaki tüm 'tasks.py' dosyalarındaki görevleri otomatik olarak keşfeder (autodiscover_tasks).
+Responsibilities:
+1. Sets default DJANGO_SETTINGS_MODULE to 'main.settings'.
+2. Instantiates Celery application as 'main'.
+3. Reads configuration from Django settings with 'CELERY_' prefix.
+4. Automatically discovers tasks from all installed apps (autodiscover_tasks).
 """
 
 import os

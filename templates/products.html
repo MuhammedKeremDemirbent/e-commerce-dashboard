@@ -1,14 +1,14 @@
 <!--
 ================================================================================
-templates/products.html: Vitrin ve Ürün Kataloğu Sayfası (/)
+templates/products.html: Storefront & Product Catalog (/)
 ================================================================================
-Bu dosya, müşterilerin ürünleri inceleyip sepete eklediği ana mağaza vitrinidir.
+The primary storefront view where visitors browse products and manage cart selections.
 
-İçerik ve Entegrasyonlar:
-1. Arama Çubuğu (Search): Harf yazıldıkça debounce ile GET /api/v1/products/?search= çağırır.
-2. Sıralama Dropdown'u: Fiyata (artan/azalan) ve isme göre dinamik sıralama.
-3. Kategori Çipleri: GET /api/v1/products/categories/ ile dolup ürünleri kategoriye göre filtreler.
-4. Ürün Kartları: Fiyat, açıklama, stok durumu ve 'Sepete Ekle' butonlarını barındırır.
+Key Integrations:
+1. Live Search Input: Debounced search triggering GET /api/v1/products/?search=.
+2. Sort Dropdown: Dynamic sorting by price (ascending/descending) and product name.
+3. Category Chips: Fetched via GET /api/v1/products/categories/ for instant category filtering.
+4. Product Grid: Renders prices, inventory status badges, and 'Add to Cart' actions.
 ================================================================================
 -->
 

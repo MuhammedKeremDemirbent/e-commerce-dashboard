@@ -1,21 +1,21 @@
 """
-apps/orders/models.py: Sipariş ve Sipariş Kalemi Veritabanı Modelleri
-====================================================================
-Bu dosya, sipariş süreçlerinin veritabanı şemasını tanımlar.
+apps/orders/models.py: Order and OrderItem Models
+=================================================
+Defines database entities for customer orders and individual purchased line items.
 
-Modeller:
+Models:
 1. OrderStatus (TextChoices):
-   - PENDING (Beklemede), PROCESSING (Hazırlanıyor), COMPLETED (Tamamlandı), CANCELLED (İptal Edildi).
+   - PENDING, PROCESSING, COMPLETED, CANCELLED.
 2. Order:
-   - user (ForeignKey -> User): Siparişi veren müşteri.
-   - status: Güncel sipariş durumu.
-   - total_price: Siparişin toplam fatura tutarı.
-   - shipping_address: Teslimat adresi.
+   - user (ForeignKey -> User): The purchasing customer.
+   - status: Current lifecycle status of the order.
+   - total_price: Computed total amount.
+   - shipping_address: Delivery address for the order.
 3. OrderItem:
-   - order (ForeignKey -> Order): Bağlı olduğu sipariş.
-   - product (ForeignKey -> Product): Satın alınan ürün.
-   - quantity: Sipariş edilen adet.
-   - price: Sipariş anındaki birim ürün fiyatı (fiyat değişse bile sipariş tarihi korunur).
+   - order (ForeignKey -> Order): Parent order reference.
+   - product (ForeignKey -> Product): Purchased product reference.
+   - quantity: Purchased quantity.
+   - price: Historical unit price at checkout time (immutable against future price changes).
 """
 
 from django.conf import settings

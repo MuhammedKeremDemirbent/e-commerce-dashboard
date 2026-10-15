@@ -1,8 +1,8 @@
 """
-main/wsgi.py: WSGI Web Sunucusu Giriş Noktası
-=============================================
-Gunicorn, uWSGI veya standart WSGI uyumlu sunucuların projeyi çalıştırması için
-kullanılan standart giriş kapısıdır.
+main/wsgi.py: WSGI Server Entrypoint
+====================================
+Exposes the WSGI callable as a module-level variable named 'application'.
+Used by production WSGI web servers (Gunicorn, uWSGI) to serve the project.
 """
 
 import os

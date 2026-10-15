@@ -1,8 +1,8 @@
 """
-apps/products/admin.py: Ürün ve Kategori Django Admin Paneli Tanımları
-======================================================================
-Kategori ve Ürün modellerinin Django Admin panelinde hiyerarşik listelenmesini,
-arama yapılabilmesini, stok miktarının renkli izlenmesini ve slug'ların otomatik dolmasını sağlar.
+apps/products/admin.py: Product and Category Admin Configuration
+================================================================
+Configures the Django Admin panel for catalog management, including auto-slug generation,
+category filtering, search indexing, and inventory status indicators.
 """
 
 from django.contrib import admin

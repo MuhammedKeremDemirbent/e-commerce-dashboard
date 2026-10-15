@@ -1,15 +1,15 @@
 <!--
 ================================================================================
-templates/dashboard.html: Yönetici ve Mağaza Kontrol Paneli (/dashboard/)
+templates/dashboard.html: Store & Inventory Management Dashboard (/dashboard/)
 ================================================================================
-Bu sayfa, mağaza yöneticilerinin ürün ve sipariş süreçlerini tek merkezden yönetmesini sağlar.
+Administrative dashboard providing real-time store metrics and inventory controls.
 
-İçerik ve Entegrasyonlar:
-1. İstatistik Sayaçları: Toplam ürün, kategori, sipariş adedi ve toplam ciro göstergeleri.
-2. Yeni Ürün Ekle Formu: POST /api/v1/products/ ile kategori seçip fiyat/stok girerek ürün ekler.
-3. Yeni Kategori Ekle Formu: POST /api/v1/products/categories/ ile yeni kategori tanımlar.
-4. Ürün Listesi & Silme: DELETE /api/v1/products/<id>/ ile ürün silme ve anlık stok takibi.
-5. Sistem Siparişleri Tablosu: Müşterilerin verdiği en son siparişlerin izlenmesi.
+Key Integrations:
+1. Metrics Counters: Aggregate counters for total products, categories, orders, and revenue.
+2. Product Creation Form: Submits POST /api/v1/products/ with category, pricing, and stock.
+3. Category Creation Form: Submits POST /api/v1/products/categories/ for new catalog taxonomies.
+4. Product Inventory Table: Real-time inventory table supporting item deletion via DELETE /api/v1/products/<id>/.
+5. Recent Orders Feed: Live feed of latest system orders and fulfillment statuses.
 ================================================================================
 -->
 

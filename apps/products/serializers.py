@@ -1,13 +1,13 @@
 """
-apps/products/serializers.py: Kategori ve Ürün Serileştiricileri
-================================================================
-Katalog verilerinin JSON dönüşümlerini ve giriş doğrulamasını yapar.
+apps/products/serializers.py: Product and Category Serializers
+==============================================================
+Handles JSON serialization, deserialization, and validation for catalog models.
 
-İçerik:
-1. CategorySerializer: Kategori adı, slug, açıklama ve ürün sayısı.
-2. ProductListSerializer: Vitrin için sadeleştirilmiş ürün kartı verisi.
-3. ProductDetailSerializer: Kategori detaylarıyla birlikte tam ürün bilgisi.
-4. ProductCreateUpdateSerializer: Ürün ekleme ve düzenleme doğrulayıcısı (fiyat ve stok kontrolü).
+Serializers:
+1. CategorySerializer: Category details, slug, and product count.
+2. ProductListSerializer: Streamlined product card representation for storefront listings.
+3. ProductDetailSerializer: Comprehensive product details including nested category data.
+4. ProductCreateUpdateSerializer: Validates inventory constraints and prices during creation/updates.
 """
 
 from rest_framework import serializers

@@ -1,16 +1,16 @@
 <!--
 ================================================================================
-templates/base.html: Ana Şablon (Master Layout)
+templates/base.html: Master Layout
 ================================================================================
-Bu dosya, tüm sayfaların miras aldığı (extends) ana iskelettir.
+The root HTML structure inherited by all storefront templates.
 
-İçerik ve Görevler:
-1. Global Navbar: Mağaza logosu, 'Ürünler', 'Siparişlerim', 'Yönetim' (Adminlere özel) linkleri,
-   dinamik sepet butonu ve kullanıcı oturum göstergesi.
-2. Evrensel Sepet Çekmecesi (Slide-Over Drawer): Sayfa yenilenmeden açılan, ürün adetlerinin
-   artırılıp azaltılabildiği, teslimat adresi girilerek 'Siparişi Tamamla' denilebilen bileşen.
-3. Toast Bildirim Sistemi: Başarı ve hata mesajlarını ekranın sağ altında gösterir.
-4. Global fetchAPI() Fonksiyonu: localStorage'daki JWT access token'ı otomatik ekleyerek API isteklerini yönetir.
+Key Components:
+1. Global Navigation Bar: Store brand, navigation links, shopping cart drawer toggle,
+   and dynamic user authentication indicator.
+2. Slide-Over Cart Drawer: Off-canvas drawer allowing customers to modify quantities,
+   enter shipping details, and complete checkout asynchronously.
+3. Toast Notification System: Displays animated status and error alerts.
+4. fetchAPI Helper: Client-side API wrapper injecting Bearer JWT tokens.
 ================================================================================
 -->
 

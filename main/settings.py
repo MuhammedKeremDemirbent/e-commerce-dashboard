@@ -1,16 +1,16 @@
 """
-main/settings.py: Projenin Ana Yapılandırma ve Ayarlar Dosyası
-============================================================
-Bu dosya, tüm Django projesinin merkezi ayarlarını barındırır.
+main/settings.py: Central Project Configuration
+===============================================
+Defines global configuration settings for the Django project.
 
-Başlıca Yapılandırmalar:
-- INSTALLED_APPS : Django dahili uygulamaları, 3. parti kütüphaneler (DRF, SimpleJWT, Cors, Spectacular)
-                   ve yerel modüller (apps.users, apps.products, apps.orders).
-- MIDDLEWARE     : Güvenlik, CORS, oturum ve yetki ara yazılımları.
-- DATABASES      : Docker içindeki PostgreSQL 15 (eticaret_db) veritabanı bağlantısı.
-- REST_FRAMEWORK : Varsayılan authentication (JWT), pagination (PageNumberPagination) ve schema sınıfı.
-- TEMPLATES      : HTML sayfalarının aranacağı BASE_DIR / 'templates' dizini tanımları.
-- CELERY & REDIS : Redis broker URL ve asenkron görev sonuç veritabanı ayarları.
+Key Sections:
+- INSTALLED_APPS : Django defaults, third-party libraries (DRF, JWT, CORS, Spectacular),
+                   and local apps (apps.users, apps.products, apps.orders).
+- MIDDLEWARE     : Security, CORS, session, and authentication middleware.
+- DATABASES      : PostgreSQL 15 connection parameters via environment variables.
+- REST_FRAMEWORK : Default authentication (JWT), pagination, and OpenAPI schema class.
+- TEMPLATES      : Template search directories pointing to BASE_DIR / 'templates'.
+- CELERY & REDIS : Redis broker URL and result backend settings.
 """
 
 from pathlib import Path

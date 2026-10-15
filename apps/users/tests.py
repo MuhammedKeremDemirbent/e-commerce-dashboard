@@ -1,16 +1,16 @@
 """
-apps/users/tests.py: Kullanıcı ve Kimlik Doğrulama Test Paketi (7 Test)
-=======================================================================
-Bu dosya, kullanıcı kayıt, JWT giriş ve profil yönetimi işlevlerini izole test veritabanında test eder.
+apps/users/tests.py: User and Authentication Test Suite (7 Tests)
+================================================================
+Comprehensive test cases verifying user registration, JWT token generation, and profile security.
 
-Çalıştırılan Testler:
-1. test_kullanici_basariyla_kayit_olabilir         : Geçerli bilgilerle 201 Created döner ve veritabanına kaydeder.
-2. test_uyusmayan_sifreyle_kayit_olunamaz          : Parola ve doğrulama uyuşmadığında 400 Bad Request verir.
-3. test_ayni_eposta_ile_ikinci_kez_kayit_olunamaz : Mükerrer e-postayla kaydı engeller (400 Bad Request).
-4. test_dogru_bilgilerle_jwt_girisi                : Başarılı girişte access ve refresh token döndüğünü doğrular.
-5. test_yanlis_sifre_ile_giris_engellenir          : Hatalı şifrede 401 Unauthorized döner.
-6. test_giris_yapmayan_profiline_erisemez          : Token göndermeyen anonim isteğe 401 döner.
-7. test_giris_yapan_profilini_gorur_ve_gunceller   : JWT ile kendi profilini okuma ve PATCH ile güncelleme testi.
+Executed Tests:
+1. test_kullanici_basariyla_kayit_olabilir         : Verifies 201 Created and user creation upon valid registration.
+2. test_uyusmayan_sifreyle_kayit_olunamaz          : Ensures 400 Bad Request when password confirmation mismatches.
+3. test_ayni_eposta_ile_ikinci_kez_kayit_olunamaz : Prevents duplicate email registrations with 400 Bad Request.
+4. test_dogru_bilgilerle_jwt_girisi                : Validates that valid credentials return both access and refresh tokens.
+5. test_yanlis_sifre_ile_giris_engellenir          : Confirms 401 Unauthorized for incorrect passwords.
+6. test_giris_yapmayan_profiline_erisemez          : Ensures unauthenticated requests cannot access profile (401).
+7. test_giris_yapan_profilini_gorur_ve_gunceller   : Tests profile retrieval and partial update (PATCH) with valid JWT.
 """
 
 from django.contrib.auth import get_user_model

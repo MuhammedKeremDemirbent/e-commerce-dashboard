@@ -1,12 +1,12 @@
 """
-apps/users/serializers.py: Kullanıcı Serileştiricileri (Serializers)
-===================================================================
-JSON verilerini Python nesnelerine, veritabanı kayıtlarını da JSON formatına dönüştürür.
+apps/users/serializers.py: User Serializers
+===========================================
+Handles serialization, deserialization, and validation for user records.
 
-İçerik:
-1. UserRegisterSerializer: Yeni kullanıcı kaydı; şifre onay kontrolü ve parola şifreleme (make_password).
-2. CustomTokenObtainPairSerializer: JWT login işlemi; access & refresh token yanında kullanıcı bilgilerini döner.
-3. UserProfileSerializer: Kullanıcının profil bilgilerini (ad, soyad, telefon) görüntüleme ve güncelleme (PATCH).
+Serializers:
+1. UserRegisterSerializer: Validates new user input, password matching, and hashes passwords securely.
+2. CustomTokenObtainPairSerializer: Extends JWT token obtain pair to return user profile data with tokens.
+3. UserProfileSerializer: Handles retrieving and updating (PATCH) user profile fields.
 """
 
 from rest_framework import serializers

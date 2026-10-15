@@ -1,13 +1,13 @@
 """
-apps/products/views.py: Kategori ve Ürün API Görünümleri (Views)
-================================================================
-Katalog listeleme, filtreleme, arama ve admin yönetim uç noktalarını yönetir.
+apps/products/views.py: Product and Category API Views
+======================================================
+Generic API views handling catalog browsing, filtering, search, and administrative CRUD.
 
-Sınıflar:
-1. CategoryListCreateView : GET /categories/ (Herkese açık), POST /categories/ (Admin)
+Views:
+1. CategoryListCreateView : GET /categories/ (Public), POST /categories/ (Admin only)
 2. CategoryDetailView     : GET/PUT/PATCH/DELETE /categories/<slug>/
-3. ProductListCreateView  : GET /products/?category=&search=&ordering= (Filtreli Ürün Listesi), POST /products/ (Admin)
-4. ProductDetailView      : GET/PUT/PATCH/DELETE /products/<slug>/ (Ürün Detay ve Yönetimi)
+3. ProductListCreateView  : GET /products/?category=&search=&ordering= (Public), POST /products/ (Admin only)
+4. ProductDetailView      : GET/PUT/PATCH/DELETE /products/<slug>/ (Public read, Admin write)
 """
 
 from rest_framework import generics, filters

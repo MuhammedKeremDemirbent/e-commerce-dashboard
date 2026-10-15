@@ -1,7 +1,7 @@
 """
-apps/users/apps.py: Kullanıcı Uygulaması Yapılandırma Tanımı
-============================================================
-Django uygulama kaydını (AppConfig) gerçekleştirir.
+apps/users/apps.py: Users Application Configuration
+===================================================
+Defines the AppConfig specification for the users app.
 """
 
 from django.apps import AppConfig

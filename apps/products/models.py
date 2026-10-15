@@ -1,18 +1,18 @@
 """
-apps/products/models.py: Kategori ve Ürün Veritabanı Modelleri
-==============================================================
-Bu dosya, e-ticaret kataloğunun temel veri yapılarını tanımlar.
+apps/products/models.py: Category and Product Models
+====================================================
+Defines the relational database models for the product catalog.
 
-Modeller:
+Models:
 1. Category:
    - name, slug, description, is_active.
-   - Otomatik SEO uyumlu slug üretimi (save override).
+   - Automatically generates URL-safe slugs on save.
 2. Product:
-   - category (ForeignKey -> Category): Ürünün bağlı olduğu kategori.
-   - name, slug, description: Ürün adı, benzersiz url slug'ı ve açıklaması.
-   - price (DecimalField): Para birimi hassasiyetinde ürün fiyatı.
-   - stock (PositiveIntegerField): Güncel stok adedi.
-   - is_active: Satışta olma durumu.
+   - category (ForeignKey -> Category): Associated product category.
+   - name, slug, description: Product title, unique slug, and details.
+   - price (DecimalField): Decimal precision currency price.
+   - stock (PositiveIntegerField): Available inventory count.
+   - is_active: Catalog visibility flag.
 """
 
 from django.db import models

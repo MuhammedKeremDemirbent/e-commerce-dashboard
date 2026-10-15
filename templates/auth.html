@@ -1,14 +1,12 @@
 <!--
 ================================================================================
-templates/auth.html: Kullanıcı Giriş ve Kayıt Sayfası (/auth/)
+templates/auth.html: User Login & Registration (/auth/)
 ================================================================================
-Bu dosya, müşteri ve yöneticilerin kimlik doğrulama işlemlerini gerçekleştirir.
+Handles user onboarding and JWT token authentication.
 
-İçerik ve Entegrasyonlar:
-1. Giriş Yap Sekmesi: POST /api/v1/auth/login/ çağırır; dönen access/refresh token ve
-   kullanıcı bilgilerini localStorage'a kaydeder.
-2. Kayıt Ol Sekmesi: POST /api/v1/auth/register/ çağırır; şifre uyuşmazlıklarını ve
-   kayıt doğrulamasını yönetir.
+Key Integrations:
+1. Login Tab: Submits POST /api/v1/auth/login/ and stores access/refresh tokens in localStorage.
+2. Register Tab: Submits POST /api/v1/auth/register/ with client-side password validation.
 ================================================================================
 -->
 

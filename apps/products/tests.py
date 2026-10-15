@@ -1,13 +1,13 @@
 """
-apps/products/tests.py: Ürün ve Kategori Test Paketi (4 Test)
-=============================================================
-Bu dosya, ürün kataloğunun listelenmesini, arama mekanizmasını ve yetki sınırlarını test eder.
+apps/products/tests.py: Product Catalog Test Suite (4 Tests)
+============================================================
+Verifies catalog accessibility, administrative write protection, and search functionality.
 
-Çalıştırılan Testler:
-1. test_herkes_kategorileri_ve_urunleri_listeleyebilir : Anonim kullanıcıların vitrin ürünlerini ve kategorileri görebildiğini sınar.
-2. test_standart_kullanici_urun_ekleyemez              : Standart müşterinin ürün eklemeye çalışınca 403 Forbidden aldığını doğrular.
-3. test_admin_yeni_urun_ekleyebilir                    : Yönetici (staff/superuser) yetkisindeki kullanıcının ürün ekleyebilmesini (201) test eder.
-4. test_arama_filtresi_calisir                         : ?search= parametresinin doğru ürünü filtrelediğini teyit eder.
+Executed Tests:
+1. test_herkes_kategorileri_ve_urunleri_listeleyebilir : Confirms public access to products and categories.
+2. test_standart_kullanici_urun_ekleyemez              : Ensures non-staff customers receive 403 Forbidden on product creation.
+3. test_admin_yeni_urun_ekleyebilir                    : Verifies administrative users can successfully create products (201).
+4. test_arama_filtresi_calisir                         : Tests that ?search= query parameter correctly filters products.
 """
 
 from django.contrib.auth import get_user_model

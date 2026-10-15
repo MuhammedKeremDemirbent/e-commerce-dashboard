@@ -1,8 +1,8 @@
 """
-apps/orders/admin.py: Sipariş Django Admin Paneli Tanımları
-===========================================================
-Siparişlerin (Order) ve sipariş kalemlerinin (OrderItem - TabularInline)
-Django Admin panelinde incelenmesini, durum güncellemesini ve filtrelerini yönetir.
+apps/orders/admin.py: Order Admin Configuration
+===============================================
+Configures Django Admin management for orders, including inline line items (OrderItem),
+order statuses, shipping details, and financial totals.
 """
 
 from django.contrib import admin

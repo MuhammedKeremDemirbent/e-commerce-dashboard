@@ -1,18 +1,18 @@
 """
-apps/users/models.py: Özel Kullanıcı (Custom User) ve Model Yöneticisi
-======================================================================
-Bu dosya, sistemdeki kullanıcı veri yapısını tanımlar.
+apps/users/models.py: Custom User Model and Manager
+===================================================
+Defines the user identity model for the e-commerce system.
 
-Modeller ve Sınıflar:
+Classes:
 1. UserManager (BaseUserManager):
-   - Standart Django'nun username zorunluluğunu kaldırıp e-postayı (email) birincil giriş alanı yapar.
-   - create_user() ve create_superuser() metotlarını özelleştirir.
+   - Uses email as the unique primary identifier instead of standard username.
+   - Provides helper methods for create_user() and create_superuser().
 2. User (AbstractUser):
-   - email         : Benzersiz (unique) e-posta adresi (USERNAME_FIELD).
-   - phone_number  : Kullanıcı telefon numarası.
-   - address       : Varsayılan teslimat adresi.
-   - is_verified   : E-posta doğrulama bayrağı.
-   - created_at    : Otomatik kayıt tarihi.
+   - email         : Unique email address used for authentication (USERNAME_FIELD).
+   - phone_number  : Optional customer contact phone number.
+   - address       : Default shipping and billing address.
+   - is_verified   : Email confirmation verification flag.
+   - created_at    : Account creation timestamp.
 """
 
 from django.contrib.auth.models import AbstractUser, BaseUserManager

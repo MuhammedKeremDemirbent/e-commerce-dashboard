@@ -1,15 +1,15 @@
 <!--
 ================================================================================
-templates/orders.html: Sipariş Takibi ve İptal Sayfası (/orders/)
+templates/orders.html: Order Tracking & Cancellation (/orders/)
 ================================================================================
-Bu dosya, kullanıcının geçmiş siparişlerini incelemesini ve yönetmesini sağlar.
+Allows customers to view order history and manage pending orders.
 
-İçerik ve Entegrasyonlar:
-1. Sipariş Listesi: GET /api/v1/orders/ çağırarak kullanıcının verdiği tüm siparişleri listeler.
-2. Durum Rozetleri: Beklemede, Hazırlanıyor, Tamamlandı, İptal Edildi durumlarını renklendirir.
-3. Kalem Detayı: Siparişteki her ürünün adedi, birim fiyatı ve toplam tutarı gösterilir.
-4. Siparişi İptal Et Butonu: 'Beklemede' olan siparişler için POST /api/v1/orders/<id>/cancel/
-   çağırarak stokların otomatik olarak geri iade edilmesini tetikler.
+Key Integrations:
+1. Order Listing: Fetches customer orders via GET /api/v1/orders/.
+2. Status Badges: Visual color-coded indicators for Pending, Processing, Completed, Cancelled.
+3. Itemized Breakdown: Displays purchased products, unit prices, quantities, and totals.
+4. Cancellation Button: Invokes POST /api/v1/orders/<id>/cancel/ to cancel pending orders
+   and trigger automatic inventory restoration.
 ================================================================================
 -->
 

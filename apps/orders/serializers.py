@@ -1,15 +1,15 @@
 """
-apps/orders/serializers.py: Sipariş Serileştiricileri ve Atomik Checkout Mantığı
-===============================================================================
-Bu dosya, sipariş oluşturma ve görüntüleme işlemlerini yönetir.
+apps/orders/serializers.py: Order Serializers and Atomic Checkout Logic
+=======================================================================
+Serializes order data and implements concurrency-safe checkout logic.
 
-Sınıflar ve Önemli Mantıklar:
-1. OrderItemSerializer: Sipariş içerisindeki ürünlerin listelenmesi.
-2. OrderDetailSerializer: Siparişin tüm detayları, kalemleri ve durum bilgisi.
-3. OrderCreateSerializer (Checkout Mantığı):
-   - transaction.atomic() ve select_for_update() kullanarak eşzamanlı isteklerde yarış koşulunu (race condition) önler.
-   - Ürünlerin stok durumunu kontrol eder, yetersizse hata fırlatır.
-   - Sipariş kalemlerini oluşturur ve stokları anında düşer.
+Key Classes:
+1. OrderItemSerializer: Serializes individual line items within an order.
+2. OrderDetailSerializer: Full order representation including status, items, and address.
+3. OrderCreateSerializer (Checkout Logic):
+   - Wraps checkout in transaction.atomic() with select_for_update() row locking to prevent race conditions.
+   - Validates real-time inventory levels against requested quantities.
+   - Automatically deducts stock and records order items.
 """
 
 from django.db import transaction
