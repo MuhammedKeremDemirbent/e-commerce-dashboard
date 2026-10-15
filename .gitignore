@@ -1,0 +1,95 @@
+# ==============================================================================
+# .gitignore: Git Tarafından Takip Edilmeyecek (Yoksayılacak) Dosyalar
+# ==============================================================================
+
+
+# DİKKAT: .env dosyası asla GitHub'a atılmamalıdır! Gerçek şifreleri barındırır.
+.env
+.env.*
+*.env
+local_settings.py
+
+# Ancak örnek şablon dosyasının GitHub'a gitmesine izin veriyoruz:
+!env-example
+!.env.example
+
+
+# Python'ın çalışırken arka planda ürettiği derlenmiş bytecode dosyaları
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Bilgisayarınızda veya sunucuda oluşturulan Python kütüphane klasörleri
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+
+
+/media/
+# collectstatic komutunun derlediği statik dosya çıktısı
+/staticfiles/
+
+# SQLite kullanılması durumunda veritabanı dosyasının git'e girmemesi için
+*.sqlite3
+*.sqlite3-journal
+*.db
+
+# Celery Beat zamanlayıcısının çalışma esnasında ürettiği geçici takip dosyaları
+celerybeat-schedule
+celerybeat-schedule.db
+celerybeat.pid
+
+
+*.log
+logs/
+*.pid
+
+# Kişisel VS Code veya PyCharm ayarlarının başkalarının projesini bozamaması için
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Windows ve macOS tarafından otomatik oluşturulan küçük sistem dosyaları
+Thumbs.db
+Desktop.ini
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+htmlcov/
+.pytest_cache/

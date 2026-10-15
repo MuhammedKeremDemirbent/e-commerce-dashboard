@@ -1,0 +1,132 @@
+# ==============================================================================
+# docker-compose.yml: Çoklu Konteyner (Multi-Container) Orkestrasyonu
+# ==============================================================================
+# Bu dosya, E-Ticaret sisteminin ihtiyaç duyduğu tüm bağımsız servisleri tek bir ağda
+# (network) izole olarak ayağa kaldırır ve birbirleriyle güvenle haberleştirir.
+#
+# Servisler ve Görevleri:
+# 1. db (PostgreSQL 15)           : Ana ilişkisel veritabanı (Port: 5432)
+# 2. pgadmin (pgAdmin 4)          : Web tabanlı veritabanı yönetim arayüzü (Port: 8080)
+# 3. redis (Redis Alpine)         : Hızlı önbellek ve Celery kuyruk yöneticisi (Port: 6379)
+# 4. backend (Django + DRF)       : REST API ve Frontend sunucusu (Port: 8000)
+# 5. celery_worker (Asenkron İş)  : Sipariş, e-posta gibi arka plan kuyruk işlemlerini yürütür.
+# 6. celery_beat (Zamanlayıcı)    : Periyodik görevleri (gece stok raporu vb.) planlar.
+# 7. flower (Celery Dashboard)    : Celery kuyruklarını ve worker durumunu izler (Port: 5555)
+# ==============================================================================
+
+services:
+  # VERİTABANI
+  db:
+    image: postgres:15
+    container_name: e-ticaret_db
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Veriler silinmesin diye koruma
+    # Backend başlamadan önce DB'nin gerçekten hazır olup olmadığını kontrol eder
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - e-ticaret-net
+
+  # VERİTABANI YÖNETİM PANELİ
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: e-ticaret_pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - e-ticaret-net
+
+  # DJANGO
+  backend:
+    build: .
+    container_name: e-ticaret_backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app # Bilgisayarındaki kod değişikliğini anında içeri aktarma (Hot Reload)
+    env_file:
+      - .env # .env dosyasındaki tüm değişkenleri içeri aktar
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy # Healthcheck geçene kadar bekle
+      redis:
+        condition: service_started
+    networks:
+      - e-ticaret-net
+
+  # REDIS CACHE
+  redis:
+    image: redis:7-alpine
+    container_name: e-ticaret_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - e-ticaret-net
+
+  # CELERY WORKER
+  celery_worker:
+    build: .
+    container_name: e-ticaret_celery_worker
+    command: celery -A main worker --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env # Celery de mail şifrelerini bilmeli
+    depends_on:
+      - redis
+      - db
+    networks:
+      - e-ticaret-net
+
+  # CELERY BEAT (Periyodik görevler için zamanlayıcı)
+  celery_beat:
+    build: .
+    container_name: e-ticaret_celery_beat
+    command: celery -A main beat --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env # Beat de env'leri bilmeli
+    depends_on:
+      - redis
+      - db
+    networks:
+      - e-ticaret-net
+
+  # FLOWER (Celery görevlerini web UI'dan izle → http://localhost:5555)
+  flower:
+    build: .
+    container_name: e-ticaret_flower
+    command: celery -A main flower --port=5555
+    volumes:
+      - .:/app  # Güncel kodu container'a bağla
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - celery_worker
+    networks:
+      - e-ticaret-net
+
+# OLUŞTURULACAK AĞLAR VE DEPOLAR
+networks:
+  e-ticaret-net:
+    driver: bridge
+
+volumes:
+  postgres_data:

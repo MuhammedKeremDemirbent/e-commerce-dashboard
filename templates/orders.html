@@ -1,0 +1,220 @@
+<!--
+================================================================================
+templates/orders.html: Sipariş Takibi ve İptal Sayfası (/orders/)
+================================================================================
+Bu dosya, kullanıcının geçmiş siparişlerini incelemesini ve yönetmesini sağlar.
+
+İçerik ve Entegrasyonlar:
+1. Sipariş Listesi: GET /api/v1/orders/ çağırarak kullanıcının verdiği tüm siparişleri listeler.
+2. Durum Rozetleri: Beklemede, Hazırlanıyor, Tamamlandı, İptal Edildi durumlarını renklendirir.
+3. Kalem Detayı: Siparişteki her ürünün adedi, birim fiyatı ve toplam tutarı gösterilir.
+4. Siparişi İptal Et Butonu: 'Beklemede' olan siparişler için POST /api/v1/orders/<id>/cancel/
+   çağırarak stokların otomatik olarak geri iade edilmesini tetikler.
+================================================================================
+-->
+
+{% extends 'base.html' %}
+
+{% block title %}Siparişlerim{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .order-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+
+    .order-head {
+        padding: 14px 18px;
+        background: var(--bg-surface-elevated);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .order-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.88rem;
+    }
+
+    .status-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 4px;
+    }
+
+    .status-pending { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+    .status-processing { background: rgba(79, 70, 229, 0.15); color: #a5b4fc; }
+    .status-completed { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+    .status-cancelled { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+
+    .order-body {
+        padding: 18px;
+    }
+
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+        margin-bottom: 14px;
+    }
+
+    .items-table th, .items-table td {
+        padding: 8px 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .items-table th {
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    .order-foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-title">Siparişlerim</div>
+
+<div id="ordersContainer">
+    <div style="text-align: center; padding: 40px 0; color: var(--text-muted);">Yükleniyor...</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function loadOrders() {
+        const token = localStorage.getItem('access_token');
+        const container = document.getElementById('ordersContainer');
+
+        if (!token) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 50px 20px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius);">
+                    <p style="color: var(--text-secondary); margin-bottom: 16px;">Siparişlerinizi görmek için giriş yapmalısınız.</p>
+                    <a href="/auth/" class="btn btn-primary">Giriş Yap</a>
+                </div>
+            `;
+            return;
+        }
+
+        const res = await fetchAPI('/orders/');
+        if (!res.ok) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px 0; color: var(--danger);">Siparişler yüklenemedi.</div>';
+            return;
+        }
+
+        const orders = res.data.results || res.data || [];
+
+        if (orders.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 50px 20px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-muted);">
+                    Henüz verilmiş bir siparişiniz bulunmuyor.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = orders.map(order => {
+            let statusClass = 'status-pending';
+            if (order.status === 'PROCESSING') statusClass = 'status-processing';
+            if (order.status === 'COMPLETED') statusClass = 'status-completed';
+            if (order.status === 'CANCELLED') statusClass = 'status-cancelled';
+
+            const dateStr = new Date(order.created_at).toLocaleDateString('tr-TR', {
+                year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            const canCancel = order.status === 'PENDING';
+
+            return `
+                <div class="order-card">
+                    <div class="order-head">
+                        <div class="order-meta">
+                            <strong>#${order.id}</strong>
+                            <span style="color: var(--text-muted);">${dateStr}</span>
+                            <span class="status-badge ${statusClass}">${order.status_display || order.status}</span>
+                        </div>
+                        <div>
+                            ${canCancel ? `
+                                <button class="btn btn-danger btn-sm" onclick="cancelOrder(${order.id})">
+                                    İptal Et
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="order-body">
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Ürün</th>
+                                    <th>Adet</th>
+                                    <th>Fiyat</th>
+                                    <th style="text-align: right;">Tutar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${(order.items || []).map(item => `
+                                    <tr>
+                                        <td>${item.product_name || `Ürün #${item.product}`}</td>
+                                        <td>${item.quantity}</td>
+                                        <td>₺${parseFloat(item.price).toLocaleString('tr-TR')}</td>
+                                        <td style="text-align: right; font-weight: 600;">₺${(parseFloat(item.price) * item.quantity).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        <div class="order-foot">
+                            <div style="color: var(--text-secondary); max-width: 450px;">
+                                <strong>Adres:</strong> ${order.shipping_address || '-'}
+                            </div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--success);">
+                                ₺${parseFloat(order.total_price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function cancelOrder(orderId) {
+        if (!confirm(`#${orderId} numaralı siparişi iptal etmek istiyor musunuz?`)) return;
+
+        const res = await fetchAPI(`/orders/${orderId}/cancel/`, { method: 'POST' });
+        if (res.ok) {
+            showToast("Sipariş iptal edildi.", "success");
+            loadOrders();
+        } else {
+            showToast(res.data?.error || "İptal edilemedi.", "error");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadOrders();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,360 @@
+<!--
+================================================================================
+templates/dashboard.html: Yönetici ve Mağaza Kontrol Paneli (/dashboard/)
+================================================================================
+Bu sayfa, mağaza yöneticilerinin ürün ve sipariş süreçlerini tek merkezden yönetmesini sağlar.
+
+İçerik ve Entegrasyonlar:
+1. İstatistik Sayaçları: Toplam ürün, kategori, sipariş adedi ve toplam ciro göstergeleri.
+2. Yeni Ürün Ekle Formu: POST /api/v1/products/ ile kategori seçip fiyat/stok girerek ürün ekler.
+3. Yeni Kategori Ekle Formu: POST /api/v1/products/categories/ ile yeni kategori tanımlar.
+4. Ürün Listesi & Silme: DELETE /api/v1/products/<id>/ ile ürün silme ve anlık stok takibi.
+5. Sistem Siparişleri Tablosu: Müşterilerin verdiği en son siparişlerin izlenmesi.
+================================================================================
+-->
+
+{% extends 'base.html' %}
+
+{% block title %}Yönetim{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+    }
+
+    .stat-val {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .stat-lbl {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+    }
+
+    .dash-layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 20px;
+    }
+
+    @media (max-width: 800px) {
+        .dash-layout { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px;
+        margin-bottom: 20px;
+    }
+
+    .panel-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .form-control {
+        width: 100%;
+        background: var(--bg-body);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 8px 10px;
+        color: var(--text-primary);
+        font-size: 0.85rem;
+        outline: none;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+    }
+
+    .admin-table th, .admin-table td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .admin-table th {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <div class="page-title" style="margin-bottom: 0;">Yönetim Paneli</div>
+    <div style="display: flex; gap: 8px;">
+        <a href="/admin/" target="_blank" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-gears"></i> Django Admin
+        </a>
+        <a href="/api/docs/" target="_blank" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-code"></i> Swagger API
+        </a>
+    </div>
+</div>
+
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-val" id="statProducts">0</div>
+        <div class="stat-lbl">Ürün Sayısı</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-val" id="statCategories">0</div>
+        <div class="stat-lbl">Kategori Sayısı</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-val" id="statOrders">0</div>
+        <div class="stat-lbl">Sipariş Sayısı</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-val" id="statRevenue">₺0</div>
+        <div class="stat-lbl">Toplam Tutar</div>
+    </div>
+</div>
+
+<div class="dash-layout">
+    <!-- SOL: EKLEME FORMLARI -->
+    <div>
+        <div class="panel">
+            <div class="panel-title">Yeni Ürün Ekle</div>
+            <form onsubmit="handleCreateProduct(event)">
+                <div class="form-group">
+                    <label>Ürün Adı</label>
+                    <input type="text" id="newProdName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <select id="newProdCategory" class="form-control" required></select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                    <div>
+                        <label style="display:block; font-size:0.78rem; color:var(--text-secondary); margin-bottom:4px;">Fiyat (₺)</label>
+                        <input type="number" id="newProdPrice" class="form-control" step="0.01" min="0" required>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.78rem; color:var(--text-secondary); margin-bottom:4px;">Stok</label>
+                        <input type="number" id="newProdStock" class="form-control" min="0" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Açıklama</label>
+                    <textarea id="newProdDesc" class="form-control" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="createProductBtn">Kaydet</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Yeni Kategori Ekle</div>
+            <form onsubmit="handleCreateCategory(event)">
+                <div class="form-group">
+                    <label>Kategori Adı</label>
+                    <input type="text" id="newCatName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Açıklama</label>
+                    <input type="text" id="newCatDesc" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-secondary" style="width: 100%;" id="createCatBtn">Ekle</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SAĞ: LİSTELER -->
+    <div>
+        <div class="panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div class="panel-title" style="margin-bottom: 0;">Ürünler</div>
+                <button class="btn btn-secondary btn-sm" onclick="loadDashboard()">Yenile</button>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ad</th>
+                        <th>Fiyat</th>
+                        <th>Stok</th>
+                        <th style="text-align: right;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="dashProductsTable">
+                    <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Yükleniyor...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Son Siparişler</div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tarih</th>
+                        <th>Tutar</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody id="dashOrdersTable">
+                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Yükleniyor...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function loadDashboard() {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            window.location.href = '/auth/';
+            return;
+        }
+
+        // Kategoriler
+        const catRes = await fetchAPI('/products/categories/');
+        if (catRes.ok && catRes.data) {
+            const cats = catRes.data.results || catRes.data;
+            document.getElementById('statCategories').innerText = cats.length;
+            document.getElementById('newProdCategory').innerHTML = cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+
+        // Ürünler
+        const prodRes = await fetchAPI('/products/');
+        if (prodRes.ok && prodRes.data) {
+            const prods = prodRes.data.results || prodRes.data;
+            document.getElementById('statProducts').innerText = prods.length;
+            document.getElementById('dashProductsTable').innerHTML = prods.map(p => `
+                <tr>
+                    <td style="color: var(--text-muted);">#${p.id}</td>
+                    <td style="font-weight: 500;">${p.name}</td>
+                    <td>₺${parseFloat(p.price).toLocaleString('tr-TR')}</td>
+                    <td>${p.stock}</td>
+                    <td style="text-align: right;">
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id}, '${p.name}')">Sil</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Siparişler
+        const orderRes = await fetchAPI('/orders/');
+        if (orderRes.ok && orderRes.data) {
+            const orders = orderRes.data.results || orderRes.data || [];
+            document.getElementById('statOrders').innerText = orders.length;
+
+            const total = orders.reduce((sum, o) => sum + (o.status !== 'CANCELLED' ? parseFloat(o.total_price) : 0), 0);
+            document.getElementById('statRevenue').innerText = `₺${total.toLocaleString('tr-TR', { maximumFractionDigits: 0 })}`;
+
+            document.getElementById('dashOrdersTable').innerHTML = orders.slice(0, 10).map(o => `
+                <tr>
+                    <td>#${o.id}</td>
+                    <td style="color: var(--text-muted);">${new Date(o.created_at).toLocaleDateString('tr-TR')}</td>
+                    <td style="font-weight: 600;">₺${parseFloat(o.total_price).toLocaleString('tr-TR')}</td>
+                    <td>${o.status_display || o.status}</td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    async function handleCreateProduct(e) {
+        e.preventDefault();
+        const name = document.getElementById('newProdName').value.trim();
+        const category = parseInt(document.getElementById('newProdCategory').value);
+        const price = parseFloat(document.getElementById('newProdPrice').value);
+        const stock = parseInt(document.getElementById('newProdStock').value);
+        const description = document.getElementById('newProdDesc').value.trim();
+
+        const res = await fetchAPI('/products/', {
+            method: 'POST',
+            body: JSON.stringify({ name, category, price, stock, description })
+        });
+
+        if (res.ok) {
+            showToast("Ürün eklendi.", "success");
+            document.getElementById('newProdName').value = '';
+            document.getElementById('newProdPrice').value = '';
+            document.getElementById('newProdStock').value = '';
+            document.getElementById('newProdDesc').value = '';
+            loadDashboard();
+        } else {
+            showToast("Ürün eklenemedi.", "error");
+        }
+    }
+
+    async function handleCreateCategory(e) {
+        e.preventDefault();
+        const name = document.getElementById('newCatName').value.trim();
+        const description = document.getElementById('newCatDesc').value.trim();
+
+        const res = await fetchAPI('/products/categories/', {
+            method: 'POST',
+            body: JSON.stringify({ name, description })
+        });
+
+        if (res.ok) {
+            showToast("Kategori eklendi.", "success");
+            document.getElementById('newCatName').value = '';
+            document.getElementById('newCatDesc').value = '';
+            loadDashboard();
+        } else {
+            showToast("Kategori eklenemedi.", "error");
+        }
+    }
+
+    async function deleteProduct(id, name) {
+        if (!confirm(`'${name}' silinsin mi?`)) return;
+
+        const res = await fetchAPI(`/products/${id}/`, { method: 'DELETE' });
+        if (res.ok) {
+            showToast("Ürün silindi.", "info");
+            loadDashboard();
+        } else {
+            showToast("Silinemedi.", "error");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDashboard);
+</script>
+{% endblock %}

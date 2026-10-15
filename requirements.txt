@@ -1,0 +1,37 @@
+# ==============================================================================
+# requirements.txt: Python Paket ve Kütüphane Bağımlılıkları
+# ==============================================================================
+# Projenin çalışabilmesi için sanal ortamda veya Docker imajında bulunması gereken kütüphaneler:
+#
+# • Django (~=4.2.0)                 : Çekirdek web çatısı
+# • djangorestframework (~=3.14.0)   : REST API geliştirme araçları
+# • djangorestframework-simplejwt    : JWT (JSON Web Token) tabanlı kimlik doğrulama
+# • django-cors-headers              : Farklı domain/portlardan gelen HTTP isteklerini karşılama (CORS)
+# • django-filter                    : API sorgularında dinamik filtreleme (?category=1 vb.)
+# • psycopg2-binary                  : PostgreSQL veritabanı sürücüsü
+# • celery                           : Asenkron ve arka plan görev yürütücüsü
+# • redis                            : Celery ve Django için bellek içi broker sürücüsü
+# • flower                           : Celery izleme ve yönetim web paneli
+# • drf-spectacular                  : OpenAPI 3.0 ve Swagger UI otomatik dokümantasyon üreticisi
+# ==============================================================================
+
+django
+djangorestframework
+psycopg2-binary     #Database bağlantısı için
+python-dotenv       #Güvenlik için
+django-cors-headers #Frontend ile backend arasındaki iletişim için
+django-redis #Bellek (Cache) için
+celery       #Arka plan görevleri için
+redis        #Celery ve Cache için Python istemcisig      
+djangorestframework-simplejwt #JWT Auth için
+gunicorn
+django-filter
+Pillow  #resim işleyebilmek için
+certifi #SSL sertifikaları için
+
+drf-spectacular #swagger
+
+whitenoise #Gunicorn + static dosyalar (CSS/JS/admin) için şart, nginx olmadan da çalışır
+flower #	Celery görevlerini web UI üzerinden izlemek için
+pytest-django  #Django test entegrasyonu
+pytest         #Test framewor

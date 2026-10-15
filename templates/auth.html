@@ -1,0 +1,220 @@
+<!--
+================================================================================
+templates/auth.html: Kullanıcı Giriş ve Kayıt Sayfası (/auth/)
+================================================================================
+Bu dosya, müşteri ve yöneticilerin kimlik doğrulama işlemlerini gerçekleştirir.
+
+İçerik ve Entegrasyonlar:
+1. Giriş Yap Sekmesi: POST /api/v1/auth/login/ çağırır; dönen access/refresh token ve
+   kullanıcı bilgilerini localStorage'a kaydeder.
+2. Kayıt Ol Sekmesi: POST /api/v1/auth/register/ çağırır; şifre uyuşmazlıklarını ve
+   kayıt doğrulamasını yönetir.
+================================================================================
+-->
+
+{% extends 'base.html' %}
+
+{% block title %}Giriş Yap{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-box {
+        max-width: 400px;
+        margin: 40px auto;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+    }
+
+    .auth-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+    }
+
+    .auth-tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+    }
+
+    .auth-tab.active {
+        color: #fff;
+        border-bottom-color: var(--primary);
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .form-control {
+        width: 100%;
+        background: var(--bg-body);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 9px 12px;
+        color: var(--text-primary);
+        font-size: 0.88rem;
+        outline: none;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-box">
+    <div class="auth-tabs">
+        <div class="auth-tab active" id="loginTabBtn" onclick="switchTab('login')">Giriş Yap</div>
+        <div class="auth-tab" id="registerTabBtn" onclick="switchTab('register')">Kayıt Ol</div>
+    </div>
+
+    <!-- GİRİŞ FORMU -->
+    <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+            <label>E-Posta</label>
+            <input type="email" id="loginEmail" class="form-control" placeholder="ornek@mail.com" required>
+        </div>
+        <div class="form-group">
+            <label>Şifre</label>
+            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="loginSubmitBtn">
+            Giriş Yap
+        </button>
+    </form>
+
+    <!-- KAYIT FORMU -->
+    <form id="registerForm" onsubmit="handleRegister(event)" style="display: none;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+            <div>
+                <label style="display:block; font-size:0.8rem; color:var(--text-secondary); margin-bottom:4px;">Ad</label>
+                <input type="text" id="regFirstName" class="form-control" placeholder="Adınız" required>
+            </div>
+            <div>
+                <label style="display:block; font-size:0.8rem; color:var(--text-secondary); margin-bottom:4px;">Soyad</label>
+                <input type="text" id="regLastName" class="form-control" placeholder="Soyadınız" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>E-Posta</label>
+            <input type="email" id="regEmail" class="form-control" placeholder="ornek@mail.com" required>
+        </div>
+        <div class="form-group">
+            <label>Telefon</label>
+            <input type="tel" id="regPhone" class="form-control" placeholder="05xxxxxxxxx">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+            <div>
+                <label style="display:block; font-size:0.8rem; color:var(--text-secondary); margin-bottom:4px;">Şifre</label>
+                <input type="password" id="regPassword" class="form-control" placeholder="••••••••" required>
+            </div>
+            <div>
+                <label style="display:block; font-size:0.8rem; color:var(--text-secondary); margin-bottom:4px;">Tekrar</label>
+                <input type="password" id="regPasswordConfirm" class="form-control" placeholder="••••••••" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="registerSubmitBtn">
+            Kayıt Ol
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchTab(mode) {
+        document.getElementById('loginTabBtn').classList.toggle('active', mode === 'login');
+        document.getElementById('registerTabBtn').classList.toggle('active', mode === 'register');
+        document.getElementById('loginForm').style.display = mode === 'login' ? 'block' : 'none';
+        document.getElementById('registerForm').style.display = mode === 'register' ? 'block' : 'none';
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        const btn = document.getElementById('loginSubmitBtn');
+        btn.disabled = true;
+        btn.innerText = 'Giriş Yapılıyor...';
+
+        const res = await fetchAPI('/auth/login/', {
+            method: 'POST',
+            body: JSON.stringify({ email, password })
+        });
+
+        btn.disabled = false;
+        btn.innerText = 'Giriş Yap';
+
+        if (res.ok && res.data) {
+            localStorage.setItem('access_token', res.data.access);
+            localStorage.setItem('refresh_token', res.data.refresh);
+            if (res.data.user) {
+                localStorage.setItem('user_info', JSON.stringify(res.data.user));
+            }
+            showToast("Giriş yapıldı.", "success");
+            setTimeout(() => { window.location.href = '/'; }, 400);
+        } else {
+            const msg = res.data?.detail || res.data?.non_field_errors?.[0] || "Giriş bilgileri hatalı.";
+            showToast(msg, "error");
+        }
+    }
+
+    async function handleRegister(e) {
+        e.preventDefault();
+        const first_name = document.getElementById('regFirstName').value.trim();
+        const last_name = document.getElementById('regLastName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const phone_number = document.getElementById('regPhone').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const password_confirm = document.getElementById('regPasswordConfirm').value;
+
+        if (password !== password_confirm) {
+            showToast("Şifreler eşleşmiyor.", "error");
+            return;
+        }
+
+        const btn = document.getElementById('registerSubmitBtn');
+        btn.disabled = true;
+        btn.innerText = 'İşleniyor...';
+
+        const res = await fetchAPI('/auth/register/', {
+            method: 'POST',
+            body: JSON.stringify({ email, password, password_confirm, first_name, last_name, phone_number })
+        });
+
+        btn.disabled = false;
+        btn.innerText = 'Kayıt Ol';
+
+        if (res.ok) {
+            showToast("Kayıt tamamlandı, şimdi giriş yapabilirsiniz.", "success");
+            switchTab('login');
+            document.getElementById('loginEmail').value = email;
+            document.getElementById('loginPassword').focus();
+        } else {
+            let errorMsg = "Kayıt oluşturulamadı.";
+            if (res.data) {
+                const k = Object.keys(res.data)[0];
+                if (k) errorMsg = `${k}: ${res.data[k]}`;
+            }
+            showToast(errorMsg, "error");
+        }
+    }
+</script>
+{% endblock %}

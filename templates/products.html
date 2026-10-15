@@ -1,0 +1,319 @@
+<!--
+================================================================================
+templates/products.html: Vitrin ve Ürün Kataloğu Sayfası (/)
+================================================================================
+Bu dosya, müşterilerin ürünleri inceleyip sepete eklediği ana mağaza vitrinidir.
+
+İçerik ve Entegrasyonlar:
+1. Arama Çubuğu (Search): Harf yazıldıkça debounce ile GET /api/v1/products/?search= çağırır.
+2. Sıralama Dropdown'u: Fiyata (artan/azalan) ve isme göre dinamik sıralama.
+3. Kategori Çipleri: GET /api/v1/products/categories/ ile dolup ürünleri kategoriye göre filtreler.
+4. Ürün Kartları: Fiyat, açıklama, stok durumu ve 'Sepete Ekle' butonlarını barındırır.
+================================================================================
+-->
+
+{% extends 'base.html' %}
+
+{% block title %}Ürünler{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Toolbar: Arama ve Sıralama */
+    .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .search-box {
+        position: relative;
+        flex: 1;
+        min-width: 240px;
+        max-width: 400px;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    .search-input {
+        width: 100%;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 9px 12px 9px 34px;
+        color: var(--text-primary);
+        font-size: 0.88rem;
+        outline: none;
+    }
+
+    .search-input:focus {
+        border-color: var(--border-hover);
+    }
+
+    /* Kategori Butonları */
+    .category-chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .chip {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .chip:hover {
+        color: #fff;
+        border-color: var(--border-hover);
+    }
+
+    .chip.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+    }
+
+    /* Ürün Kartları Grid */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+    }
+
+    .product-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        transition: border-color 0.15s;
+    }
+
+    .product-card:hover {
+        border-color: var(--border-hover);
+    }
+
+    .product-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .product-cat {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .stock-badge {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    .stock-in { color: var(--success); background: rgba(16, 185, 129, 0.1); }
+    .stock-out { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+
+    .product-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 6px;
+    }
+
+    .product-desc {
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        line-height: 1.4;
+        margin-bottom: 16px;
+        flex: 1;
+    }
+
+    .card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+    }
+
+    .product-price {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ARAMA VE SIRALAMA -->
+<div class="toolbar">
+    <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" class="search-input" placeholder="Ürün ara..." oninput="handleSearch(this.value)">
+    </div>
+    <div>
+        <select id="sortSelect" class="btn btn-secondary" onchange="handleSort(this.value)" style="padding: 8px 12px; font-size: 0.85rem;">
+            <option value="newest">Varsayılan Sıralama</option>
+            <option value="price_asc">Fiyat: Düşükten Yükseğe</option>
+            <option value="price_desc">Fiyat: Yüksekten Düşüğe</option>
+            <option value="name">İsme Göre (A-Z)</option>
+        </select>
+    </div>
+</div>
+
+<!-- KATEGORİ FİLTRESİ -->
+<div class="category-chips" id="categoryChips">
+    <button class="chip active" onclick="filterByCategory(null)">Tümü</button>
+</div>
+
+<!-- ÜRÜN LİSTESİ -->
+<div class="products-grid" id="productsGrid">
+    <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 0.9rem;">
+        Ürünler yükleniyor...
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let allProducts = [];
+    let categories = [];
+    let selectedCategoryId = null;
+    let searchQuery = '';
+    let currentSort = 'newest';
+    let searchDebounceTimeout = null;
+
+    async function loadCategories() {
+        const res = await fetchAPI('/products/categories/');
+        if (res.ok && res.data) {
+            categories = res.data.results || res.data;
+            const container = document.getElementById('categoryChips');
+            
+            const html = [
+                `<button class="chip ${selectedCategoryId === null ? 'active' : ''}" onclick="filterByCategory(null)">Tümü</button>`
+            ];
+
+            categories.forEach(cat => {
+                html.push(`
+                    <button class="chip ${selectedCategoryId === cat.id ? 'active' : ''}" onclick="filterByCategory(${cat.id})">
+                        ${cat.name}
+                    </button>
+                `);
+            });
+
+            container.innerHTML = html.join('');
+        }
+    }
+
+    async function loadProducts() {
+        let endpoint = '/products/?';
+        const params = [];
+        if (selectedCategoryId) params.push(`category=${selectedCategoryId}`);
+        if (searchQuery) params.push(`search=${encodeURIComponent(searchQuery)}`);
+        endpoint += params.join('&');
+
+        const res = await fetchAPI(endpoint);
+        if (res.ok && res.data) {
+            allProducts = res.data.results || res.data;
+            applySortAndRender();
+        } else {
+            document.getElementById('productsGrid').innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px 0; color: var(--danger);">Ürünler yüklenemedi.</div>';
+        }
+    }
+
+    function filterByCategory(catId) {
+        selectedCategoryId = catId;
+        loadCategories();
+        loadProducts();
+    }
+
+    function handleSearch(val) {
+        clearTimeout(searchDebounceTimeout);
+        searchDebounceTimeout = setTimeout(() => {
+            searchQuery = val.trim();
+            loadProducts();
+        }, 250);
+    }
+
+    function handleSort(sortType) {
+        currentSort = sortType;
+        applySortAndRender();
+    }
+
+    function applySortAndRender() {
+        let products = [...allProducts];
+
+        if (currentSort === 'price_asc') {
+            products.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        } else if (currentSort === 'price_desc') {
+            products.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+        } else if (currentSort === 'name') {
+            products.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        renderProducts(products);
+    }
+
+    function renderProducts(products) {
+        const grid = document.getElementById('productsGrid');
+
+        if (products.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 50px 0; color: var(--text-muted);">Eşleşen ürün bulunamadı.</div>';
+            return;
+        }
+
+        grid.innerHTML = products.map(prod => {
+            const isOutOfStock = prod.stock <= 0;
+            const stockBadge = isOutOfStock
+                ? '<span class="stock-badge stock-out">Tükendi</span>'
+                : `<span class="stock-badge stock-in">Stok: ${prod.stock}</span>`;
+
+            const catName = prod.category_name || (categories.find(c => c.id === prod.category)?.name) || '';
+
+            return `
+                <div class="product-card">
+                    <div class="product-top">
+                        <span class="product-cat">${catName}</span>
+                        ${stockBadge}
+                    </div>
+                    <div class="product-title">${prod.name}</div>
+                    <div class="product-desc">${prod.description || ''}</div>
+                    <div class="card-footer">
+                        <div class="product-price">₺${parseFloat(prod.price).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</div>
+                        <button class="btn btn-primary btn-sm" ${isOutOfStock ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} onclick='addToCart(${JSON.stringify(prod)})'>
+                            <i class="fa-solid fa-plus"></i> Ekle
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCategories();
+        loadProducts();
+    });
+</script>
+{% endblock %}

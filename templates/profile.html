@@ -1,0 +1,129 @@
+<!--
+================================================================================
+templates/profile.html: Kullanıcı Profil Sayfası (/profile/)
+================================================================================
+Bu dosya, kullanıcının kendi profil bilgilerini inceleyip güncellemesini sağlar.
+
+İçerik ve Entegrasyonlar:
+1. Profil Görüntüleme: GET /api/v1/auth/profile/ ile ad, soyad, e-posta ve telefon bilgilerini getirir.
+2. Bilgileri Güncelleme: PATCH /api/v1/auth/profile/ ile değişiklikleri veritabanına kaydeder.
+3. Çıkış Yap: localStorage'daki token'ları temizler ve ana sayfaya yönlendirir.
+================================================================================
+-->
+
+{% extends 'base.html' %}
+
+{% block title %}Profilim{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-box {
+        max-width: 500px;
+        margin: 20px auto;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .form-control {
+        width: 100%;
+        background: var(--bg-body);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 9px 12px;
+        color: var(--text-primary);
+        font-size: 0.88rem;
+        outline: none;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-box">
+    <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 4px;" id="profileTitle">Profil</h2>
+        <div style="font-size: 0.85rem; color: var(--text-secondary);" id="profileEmail">-</div>
+    </div>
+
+    <form onsubmit="handleUpdate(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <div>
+                <label style="display:block; font-size:0.8rem; color:var(--text-secondary); margin-bottom:4px;">Ad</label>
+                <input type="text" id="profFirstName" class="form-control">
+            </div>
+            <div>
+                <label style="display:block; font-size:0.8rem; color:var(--text-secondary); margin-bottom:4px;">Soyad</label>
+                <input type="text" id="profLastName" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Telefon</label>
+            <input type="tel" id="profPhone" class="form-control">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 18px;">
+            <button type="submit" class="btn btn-primary" id="saveBtn">Kaydet</button>
+            <button type="button" class="btn btn-danger" onclick="logout()">Çıkış Yap</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function loadProfile() {
+        const res = await fetchAPI('/auth/profile/');
+        if (res.ok && res.data) {
+            const u = res.data;
+            document.getElementById('profileTitle').innerText = `${u.first_name || ''} ${u.last_name || ''}`.trim() || 'Hesap';
+            document.getElementById('profileEmail').innerText = u.email;
+            document.getElementById('profFirstName').value = u.first_name || '';
+            document.getElementById('profLastName').value = u.last_name || '';
+            document.getElementById('profPhone').value = u.phone_number || '';
+        }
+    }
+
+    async function handleUpdate(e) {
+        e.preventDefault();
+        const first_name = document.getElementById('profFirstName').value.trim();
+        const last_name = document.getElementById('profLastName').value.trim();
+        const phone_number = document.getElementById('profPhone').value.trim();
+
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = true;
+        btn.innerText = 'Kaydediliyor...';
+
+        const res = await fetchAPI('/auth/profile/', {
+            method: 'PATCH',
+            body: JSON.stringify({ first_name, last_name, phone_number })
+        });
+
+        btn.disabled = false;
+        btn.innerText = 'Kaydet';
+
+        if (res.ok) {
+            showToast("Bilgiler güncellendi.", "success");
+            loadProfile();
+        } else {
+            showToast("Güncelleme yapılamadı.", "error");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProfile);
+</script>
+{% endblock %}
