@@ -1,6 +1,3 @@
-# ==============================================================================
-# requirements.txt: Python Dependencies
-# ==============================================================================
 # Package dependencies required for running the application:
 #
 # - Django (~=4.2.0)                 : Core web framework
